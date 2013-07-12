@@ -1,0 +1,484 @@
+%!TEX root = Humanoids2013.tex
+\section{Optimization of Stiffness and Pre-Load parameters}
+\label{sec:optimization}
+
+% For illustrating the application of the method, we consider two general cases: a fully actuated system (n-DoF manipulator) and an underactuated system (n-link biped robot). One of the cases is studied using SEA and the mechanichal energy-based performance index and the other one using PEA and the torque based index; however, the method can be applied to general n-DoF fully actuated or underactuaded systems minimizing either one of the proposed indices.   
+In this section we will exploit the dynamic equations of the mechanical system at hand in order to write the cost functional as a function of joint trajectories $q(t)$ (and their derivatives) and actuation parameters $\beta$. It is important to note that in the following analysis we assume that $K = \text{diag}[K_{1}, K_{2}, ..., K_{n}]$ and $J_{m} = \text{diag}[J_{m1}, J_{m2}, ..., J_{mn}]$. 
+
+At the end we will be able to determine the optimal stiffness and pre-load values as functions of given desired trajectories $q_d(t)$ and hence to translate the optimal problem given in~\eqref{eq:problem_form} 
+% where both joint trajectories and actuation parameters must to be optimized at the same time, 
+in a simpler problem where the objective is only to find the optimal joint trajectories.
+
+%Example 1: n-link manipulator with SEA
+%Some examples of the application of the optimization method have been carried out. First, it is shown that an optimum elastic constant can be found for n-link robots, using the performance index in \eqref{eq:J2} and assuming a given cyclic joint trajectory. 
+%Another example of a 1-DoF hopping robot is presented. The performance index in \eqref{eq:J3} is minimized in this case. Besides finding the best elastic constant of the joint, a method to find an optimal cycle is presented. 
+
+\subsection{Stiffness optimization for a mechanical system using SEAs.}
+\label{sec:SEAOptimization}
+
+Let us assume that joint trajectories $q(t)=q_d(t)$ and its first $\dot q(t)=\dot q_d(t)$ and second $\ddot q(t)=\ddot q_d(t)$ derivatives are given, and consider a mechanical system as in~\eqref{eq:noact_SEAplus}, \eqref{eq:underact1_SEAplus} and \eqref{eq:underact2_SEAplus}. By integration, from~\eqref{eq:noact_SEAplus} it is possible to find $x$ as a function of the desired trajectories $q_d(t)$ and hence, by substituting in~\eqref{eq:underact1_SEAplus} and \eqref{eq:underact2_SEAplus}, to obtain
+\begin{align}
+\label{eq:actuated1_SEA_des}
+f(\ddot{q}_d, \dot{q}_d, q_d, t) &= - K(q_d - \theta) \\
+J_{m} \ddot{\theta} &= K(q_d - \theta) + \tau\,,
+\label{eq:actuated2_SEA_des}
+\end{align}
+which is in the form represented by~\eqref{eq:actuated1_SEA} and \eqref{eq:actuated2_SEA}. Hence, the following analysis is valid for every underactuated system using SEAs.
+
+% Solving \eqref{eq:underact}, we find $\ddot{x}$, $\dot{x}$, and $x$. Then, $\theta$ is evaluated from \eqref{eq:underact}, given the desired trajectory $q$, and the corresponding velocities $\dot{q}$ and accelerations $\ddot{q}$. Furthermore, the torques of the actuated part of the system are computed using \eqref{eq:underact}.
+% 
+% For a system that uses series elastic atuators, \eqref{eq:actuated1} and \eqref{eq:actuated2}are rewritten as
+As matrices $K$ and $J_m$ are assumed to be diagonal, \eqref{eq:actuated1_SEA_des} and \eqref{eq:actuated2_SEA_des} can be written for each actuator as
+\begin{align}
+	\label{eq:actuated1_SEA_des_motor}
+f_j(\ddot{q}_d, \dot{q}_d, q_d, t)  &= - K_j[q_{d,j} - \theta_j]\,,\\
+J_{m_{j}} \ddot{\theta}_j &= \tau_j + K_i(q_{d,j}-\theta_j)\, ,
+\label{eq:actuated2_SEA_des_motor}
+\end{align}
+for $j= 1, 2, \ldots, n$, where $f_j(\ddot{q}_d, \dot{q}_d, q_d, t)$ denotes the j-th element of the function $f(\ddot{q}_d, \dot{q}_d, q_d, t)$. From~\eqref{eq:actuated1_SEA_des_motor} we have
+\begin{equation}
+	\theta_j = K_j^{-1} f_j(\ddot{q}_d, \dot{q}_d, q_d, t) + q_{d,j} \, ,
+	\label{eq:motor_position}
+\end{equation}
+\begin{equation}
+	\dot{\theta}_j  = K_j^{-1} \dot{f}_j(\ddot{q}_d, \dot{q}_d, q_d, t) + \dot{q}_{d,j} \, ,
+		\label{eq:motor_speed}
+\end{equation}
+\begin{equation}
+	\ddot{\theta}_j = K_j^{-1} \ddot{f}_j(\ddot{q}_d, \dot{q}_d, q_d, t) + \ddot{q}_{d,j} \,.
+		\label{eq:motor_acc}
+\end{equation}
+
+Replacing~\eqref{eq:motor_position} and \eqref{eq:motor_acc} in \eqref{eq:actuated2_SEA_des_motor}, the j-{th} motor torque required to track the desired trajectory $q_d(t)$ is
+\begin{equation}
+\tau_j = J_{m_j}(K_j^{-1} \ddot{f}_j(\ddot{q}_d, \dot{q}_d, q_d, t) + \ddot{q}_{d,j}) + f_j(\ddot{q}_d, \dot{q}_d, q_d, t) \,.
+\label{eq:substau}
+\end{equation}
+
+We rewrite cost index $J_1$ in terms of $q_d(t)$, $\dot q_d(t)$ and stiffness $K$. The j-th element related to the j-th actuator is
+\begin{equation}
+J_{1,j}=\int_0^T{(\tau_{j}(t)\dot{\theta_{j}}(t))^{2}dt}\, .
+\label{eq:J1j}
+\end{equation}
+
+By substituting~\eqref{eq:motor_speed} and \eqref{eq:substau} in \eqref{eq:J1j}, we obtain
+\begin{align*}
+J_{1,j}&=\int_0^T(\tau_{j}(t)\dot{\theta}_{j}(t))^2\,dt = \nonumber\\
+&= \int_0^T((J_{m_j}K_{j}^{-1} \ddot{f_{j}}+ J_{m_j}\ddot{q}_{d,j}+f_{j})(K_{j}^{-1} \dot{f_{j}} +\nonumber\\ 
+&\qquad+\dot{q}_{d,j}))^2\,dt= \int_0^T\left(\frac{a_{j}(t)}{K_{j}^{2}} + \frac{b_{j}(t)}{K_{j}}+ c_{j}(t)\right)^{2}\,dt
+\end{align*}
+%%%%
+% \begin{eqnarray}
+% (\tau_{i}\dot{\theta_{i}}(t))^{2} = ([J_{mi}K_{i}^{-1} \ddot{f} + J_{mi}\ddot{q_{i}} +f][K_{i}^{-1} \dot{f_{i}}+ \dot{q_{i}}])^2 = \nonumber \\
+% (\frac{a_{i}(t)}{K_{i}^{2}} + \frac{b_{i}(t)}{K_{i}}+ c_{i}(t))^{2},
+% \end{eqnarray}
+where $a_{j}(t) = J_{m_j} \ddot{f}_{j} \dot{f}_{j}$, $b_{j}(t) = J_{m_j} (\ddot{f}_{j} \dot{q}_{d,j} +\dot f_j \ddot q_{d,j}) + f_{j}\dot{f}_{j}$ and
+$c_{j}(t) = J_{m_j} \ddot{q}_{d,j} \dot{q}_{d,j} + f_{j}\dot{q}_{d,j}$. % Finally, we obtain
+% \[
+% J_{1,j}=\int_0^T\left(\frac{a_{j}(t)}{K_{j}^{2}} + \frac{b_{j}(t)}{K_{j}}+ c_{j}(t)\right)^{2}\,dt\,.
+% \]
+% Therefore, \eqref{eq:11b} is now
+% 
+% \small
+% \begin{eqnarray}
+% (\tau_{i}\dot{\theta_{i}}(t))^{2} = \frac{(a^{2}_{i} (t))}{K^{4}_{i}} + \frac{2 a_{i}(t)b_{i}(t)}{K^{3}_{i}} + \nonumber \\
+% \frac{2a_{i}(t)c_{i}(t)+b_{i}^2 (t)}{K^{2}_{i}} + \frac{2b_{i}(t)c_{i}(t)}{K_{i}} +c^{2}_{i}(t) \, .
+% \end{eqnarray}
+% \normalsize
+% Hence, 
+% \small
+% \begin{center}
+% $J_{1,i}(A_{i}, B_{i}, C_{i}, D_{i}, E_{i}, K_{i})=\frac{A_{i}}{K_{i}^{4}} + \frac{B_{i}}{K_{i}^{3}} + \frac{C_{i}}{K_{i}^{2}} + \frac{D_{i}}{K_{i}} + E_{i}$.
+% \end{center}
+% 
+% \normalsize
+
+Notice that $J_{1,j}$ depends only on the stiffness $K_j$ of the j-th actuator. Hence, 
+\[
+\min_K{J_1} = \sum_j{\min_{K_j}{J_{1,j}}}\,.
+\]
+The optimal solution for each $K_j$ is such that $\frac{\partial J_{1,j}}{\partial K_j} = 0$, which, after some algebra, becomes
+\begin{equation}
+4 A_{S,j} + 3 K_j B_{S,j} + 2 C_{S,j} K_j^2 + D_{S,j} K_j^{3} = 0\,,
+\label{eq:SEA_J1_OptimalK}
+\end{equation}
+where
+\[
+\begin{aligned}
+A_{S,j} &= \int_0^T a^2_j(t)dt\,,\quad B_{S,j} = \int_0^T 2a_j(t)b_j(t)dt\\
+C_{S,j} &= \int_0^T{(2a_j(t)c_j(t)+b^2_j(t))}dt\\
+D_{S,j} &= \int_0^T{2b_j(t)c_j(t)}dt\,,\quad E_{S,j} = \int_0^T{c^2_j(t)}dt\,.
+\end{aligned}
+\]
+Notice that $A_{S,j}$, $B_{S,j}$, $C_{S,j}$, $D_{S,j}$ and $E_{S,j}$ depends only on $q_{d,j}$, $\dot q_{d,j}$ and $\ddot q_{d,j}$ which are assumed known.
+
+For the cost functional $J_2$, the j-th element related to the j-th actuator is
+\begin{equation*}
+J_{2,j}=\int_0^T{\tau^{2}_{j}(t)dt}\, .
+\label{eq:J2j}
+\end{equation*}
+and after substituting~\eqref{eq:substau}, wit some algebra, we obtain
+\begin{equation*}
+J_{2,j} = \frac{F_{S,j}}{K_j^2} + \frac{G_{S,j}}{K_j} + H_{S,j} \,,
+\label{eq:J2SEA}
+\end{equation*}
+where
+{\small
+\[
+\begin{aligned}
+F_{S,j} &= \int_0^T{(J_{m_j} \ddot{f}_j)^2 dt}\,,\ 
+H_{S,j} = \int_0^T{(J_{m_j} \ddot q_{d,j} + f_j)^2 dt}\,,\\
+G_{S,j} &= \int_0^T{2J_{m_j} \ddot{f}_j (J_{m_j} \ddot q_{d,j} + f_j) dt}\,.\\
+% a_j &= J_{m_j} \ddot{f}_j\\
+% b_j &= J_{m_j} \ddot q_{d,j} + f_j
+% \label{eq:coeffJ1SEA}
+\end{aligned}
+\]}
+Also in this case $J_{2,j}$ depends only on the stiffness $K_j$ of the j-th actuator. Hence, 
+\[
+\min_K{J_2} = \sum_j{\min_{K_j}{J_{2,j}}}\,.
+\]
+The optimal solution for each $K_j$ is such that $\frac{\partial J_{2,j}}{\partial K_j} = 0$,
+obtaining
+\begin{equation}
+\label{eq:SEAOptimalK_J2}
+\hat K_j=-2\frac{F_{S,j}}{G_{S,j}}\,.
+\end{equation}
+
+% In general, it holds that: $E_{i} > 0$ and $A_{i} > 0$. From physics, $J_{i} > 0$ provided that $K_{i} > 0$.\\
+
+%Then, the expression above can be re-written as:
+
+%\begin{center}
+%$\tilde{J_{i}}(\tilde{B}_{i}, \tilde{C}_{i}, \tilde{D}_{i}, \tilde{E}_{i}, K_{i}, t) = \frac{1}{K_{i}^{4}} + \frac{\tilde{B}_{i}}{K_{i}^{3}} + \frac{\tilde{C}_{i}}{K_{i}^{2}} + \frac{\tilde{D}_{i}}{K_{i}} + \tilde{E}_{i}$
+%\end{center}
+
+%with: $\tilde{B}_{i} = B_{i}/A_{i}$; $ \tilde{C}_{i} = C_{i}/A_{i}$; $\tilde{D}_{i} = D_{i}/A_{i}$; $\tilde{E}_{i} = E_{i}/A_{i}$. \\ 
+
+% Each $J_{1,i}$ depends on only one $K_i$; hence, 
+% \begin{equation}
+% \min_K{J_{1,i}} = \sum_i{\min_{K_i}{J_{1,i}}}. \nonumber 
+% \end{equation}
+% 
+% We look for each $\hat{K}_{i} = \arg \min_{k \in K_i} (J_i)$, where $\hat{K}_{i}$ is the solution of  
+% \begin{equation}
+% \frac{\delta J_{1,i}}{\delta K_i} = 0 
+% \label{eq:minJSEA}
+% \end{equation}
+% 
+% \begin{equation}
+% -4 A_{i} - 3 K_i B_{i} - 2 C_{i} K_{i}^{2} -D_{i} K_{i}^{3} = 0
+% %\label{eq:}
+% \end{equation}
+%$J^{*}_{i}(A_{i}, B_{i}, C_{i}, D_{i}, E_{i}, K_{i}^{*}, t)$, \\
+
+% Hence, the optimum $\hat{K_i} \in \Re$ for each joint is
+% 
+% \footnotesize
+% \begin{equation}
+% \hat{K_i} = \frac{\left(  \sqrt{(F_i)^2 + 4(9B_iD_i - 4C_i^2)^3} +F_i \right)^{1/3}}{3 \sqrt[3]{2}D} - \frac{\sqrt[3]{2} (9B_iD_I-4C_i^2)}{(3D_i(F_i)^2 +F_i)^{1/3}} - \frac{2C_i}{3D_i} \, , 
+% \end{equation}
+% 
+% \normalsize
+% 
+% \noindent with \footnotesize $F_i = -108A_iD_i^2 + 54B_iC_iD_i -16C_i^3$, and $D_i \neq 0$ \\
+% 
+% \normalsize
+% So, 
+% \footnotesize 
+% \begin{equation}
+% J^{*}_{total}(A_{i}, B_{i}, C_{i}, D_{i}, E_{i}, \hat{K}_{i}, t) = \sum_{i} {J_{1,i}^{*}(A_{i}, B_{i}, C_{i}, D_{i}, E_{i}, K_{i}, t)} \, ;
+% \label{eq:Jopt}
+% \end{equation}
+% 
+% \normalsize
+
+
+%It is remarked that the performance index can be selected different, and the method described is still valid. For instance, a minimization of $J_{\tau_{i}} = \int_{0}^T (\tau_{i}^2)dt$, or other index can be carried out.
+%In the next sections we present two examples of fully actuated and underactuated systems for which the method has been applied, using different performance indices; e.g. using \eqref{eq:J2}, \eqref{eq:J3}.
+
+\subsection{Stiffness and pre-load optimization for a mechanical system using PEAs}
+
+Let us assume also in this case given desired trajectories $q(t)=q_d(t)$ for the joints and its derivatives, and consider a mechanical system as in~\eqref{eq:noact_PEAplus} and \eqref{eq:underact_PEAplus}. By integration, from~\eqref{eq:noact_PEAplus} it is possible to find $x$ as a function of the desired trajectories $q_d(t)$ and hence, by substituting in~\eqref{eq:underact_PEAplus} to obtain
+\begin{equation}
+\label{eq:FullyActuated_des1}
+f(\ddot q_d,\dot q_d, q_d, t)=-K(q_e-q_d)+\tau\,,
+\end{equation}
+which is equivalent to the mechanical system represented by~\eqref{eq:FullyActuated}. Hence, the following analysis is valid for every underactuated or fully actuated system using PEAs. 
+
+Because of the assumption on stiffness matrix $K$, \eqref{eq:FullyActuated_des1} can be written for each actuator as
+\begin{equation}
+\label{eq:FullyActuated_des2}
+f_j(\ddot q_d,\dot q_d, q_d, t)=-K_j(q_{e,j}-q_{d,j})+\tau_j\,,
+\end{equation}
+for $j= 1, 2, \ldots, n$, where $f_j(\ddot{q}_d, \dot{q}_d, q_d, t)$ denotes the j-th element of the function $f(\ddot{q}_d, \dot{q}_d, q_d, t)$. 
+% The general dynamics an underactuated system with $n$ actuated DoF and $m$ underactuated DoF, using PEA can be written in a compact form as
+%The other joints of the leg depend on the knee motion, for this specific case, as depicted in figure \ref{fig:LEG}.
+
+% \small
+% \begin{align}
+% f_u(\ddot{x}, \dot{x}, x, \ddot{q}, \dot{q}, q) &= 0 \nonumber \\
+% f_a(\ddot{x}, \dot{x}, x, \ddot{q}, \dot{q}, q) &= K[q_{e}-q] + \tau  
+% \label{eq:PEA}
+% \end{align}
+% \normalsize
+% where $f_u$ is the function of the underactuated dynamics, with $x \in  \Re^{m}$,
+% and $f_a$ corresponds to the function of actuated dynamics, with desired trajectories $q \in \Re^{n}$. 
+% $K \in \Re^{n \times n}$ and $q_e \in \Re^{n}$ are the actuation parameters (joint stiffness and pre-load).
+
+%\begin{eqnarray}
+%f_u(\ddot{x}, \dot{x}, x, \ddot{q}, \dot{q}, q) = 0 \nonumber \\
+%f_a(\ddot{x}, \dot{x}, x, \ddot{q}, \dot{q}, q) = K(\theta-q)  
+%\label{eq:dyn}
+%\end{eqnarray}
+
+
+
+
+%The dynamics of the system that uses parallel elastic actuation is used, is given by \eqref{eq:DYN}
+
+%\footnotesize
+%\begin{eqnarray}
+%\left [ \begin{matrix}
+%B_{11}  B_{12} \\
+%B_{21}  B_{22}	
+%\end{matrix} \right ] 
+%\left [ \begin{matrix} \ddot{x} \\
+%\ddot{q}	\end{matrix} \right ] + 
+%\left [ \begin{matrix}
+%C_{11}  C_{12} \\
+%C_{21}  C_{22}	
+%\end{matrix} \right ]  
+%\left [ \begin{matrix}
+%\dot{x} \\
+%\dot{q}	\end{matrix} \right ] +   
+%\left [ \begin{matrix}
+%G_1 \\
+%G_2	
+%\end{matrix} \right ] + 
+% \left [ \begin{matrix}
+%F_1 \\
+%F_2	
+%\end{matrix} \right ] = 
+%\left [ \begin{matrix}
+%0 \\
+%K[q_e-q] + \tau	 \end{matrix} \right ]
+%\label{eq:DYN}
+%\end{eqnarray}
+
+%\normalsize
+
+%where, $K$ is the joint elastic constant, $q_{e}$ is the pre-load value due to the elastic element, and $\tau$ is the actuator's torque.
+From~\eqref{eq:FullyActuated_des2}, we have
+\begin{equation}
+\tau_j = f_j + K_j(q_{e,j} - q_{d,j})\, .
+\label{eq:tauPEA}
+\end{equation}
+
+Recalling index $J_1$ using PEA, for the j-th actuator, we have
+\begin{equation*}
+J_{1,j}=\int_0^T (\tau_j(t)\dot q_{d,j}(t))^2\,dt\,.
+\end{equation*}
+By substituting~\eqref{eq:tauPEA} in previous expression of $J_{1,j}$ we obtain
+\begin{align*}
+J_{1,j} &= A_{P,j} - K_j q_{e,j} B_{P,j} + \nonumber\\
+&+ K_j C_{P,j} +K_j^2 q^2_{e,j} D_{P,j} +\nonumber\\ &- K_j^2 q_{e,j} E_{P,j} + K_j^2 F_{P,j} \, . 
+% \label{eq:J1PEA}
+\end{align*}
+where
+\[
+\begin{aligned}
+A_{P,j} &= \int_0^T{f_j^2 \dot{q}^2_{d,j} dt}\,,\quad B_{P,j} = \int_0^T{2f_j \dot{q}^2_{d,j} dt}\,,\\
+C_{P,j} &= \int_0^T{2f_j \dot{q}^2_{d,j} q_{d,j} dt}\,,\quad D_{P,j} = \int_0^T{\dot{q}^2_{d,j} dt}\,,\\
+E_{P,j} &= \int_0^T{2 \dot{q}^2_{d,j} q_{d,j} dt}\,,\quad F_{P,j} = \int_0^T{\dot{q}^2_{d,j} q^2_{d,j} dt}\,.
+% \label{eq:coeffJ1PEA}
+\end{aligned}
+\]
+
+For given desired trajectories $q_{d,j}$, $J_{1,j}$ depends only on $K_j$ and $q_{e,j}$. Hence,
+\begin{equation*}
+\min_{K,q_e}{J_1} = \sum_j{\min_{K_j,q_{e,j}}{J_{1,j}}} \,.
+\end{equation*}
+The optimal actuation parameters are such that
+\begin{equation}
+\label{eq:partialdiff}
+\frac{\partial J_{1,j}}{\partial K_j} = 0,\qquad
+\frac{\partial J_{1,j}}{\partial q_{e,j}} = 0\,,
+% \label{eq:partialdiff1}
+\end{equation}
+which become
+\begin{align}
+	% \label{eq:diffJ1dKPEA}
+-B_{P,j} q_{e,j} + C_{P,j} +  2D_{P,j}K_j q^2_{e,j} +\nonumber\\ 
+-2 E_{P,j}K_jq_{e,j} +  2 F_{P,j} K_j  &= 0\\
+-B_{P,j} K_j+2 D_{P,j} K^2_jq_{e,j} - E_{P,j} K^2_j &= 0\,.
+% \label{eq:eq:diffJ1dqePEA}
+\end{align}
+Solving previous equations for $K$ and $q_{e,j}$, we obtain
+\begin{align}
+\label{eq:optimK_PEA_J1}
+  \hat{K}_j &= \frac{B_{P,j}E_{P,j}-2C_{P,j}D_{P,j}}{4D_{P,j}F_{P,j}-E^2_{P,j}}\\
+\hat{q}_{e,j} &= \frac{C_{P,j}E_{P,j} - 2B_{P,j}F_{P,j}}{2C_{P,j}D_{P,j}-B_{P,j}E_{P,j}}
+\label{eq:optimq_PEA_J1}
+\end{align}
+% \vspace{0.5cm}
+
+For the cost functional $J_2$, after substituting~\eqref{eq:tauPEA}, we can obtain
+% \footnotesize
+% \begin{equation}
+% J_{2,j} = \int_{0}^{T} {a_j^2(t) dt} + \int_{0}^{T} {2a_j(t) K_i[q_{e,j}-q_{d,j}(t)] dt} + \int_{0}^{T} {(K_j(q_{e,j}-q_j(t)))^2 dt}
+% \label{eq:squaredTorque}
+% \end{equation}
+% \normalsize
+% where $a_j =f_j$.
+% %$a = B_{21} \ddot{x_i} + B_22 \ddot{q_i} + C_{21} \dot{x_i} + C_{22} \dot{q_I} + G_{2} - F_{2}$, \\
+% % and $T$ is the period of the cyclic trajectory.\\
+% Then, the index is 
+% \footnotesize
+\begin{align}
+J_{2,j} &= G_{P,j} - K_j q_{e,j} H_{P,j} + K_j I_{P,j} +\nonumber\\
+&+T\,K_j^2q_{e,j}^2 + K_j^2 L_{P,j} - K_j^2 q_{e,j} M_{P,j} \,,
+\label{eq:IndexPEA}
+\end{align}
+where
+\begin{align*}
+G_{P,j} &= \int_{0}^{T} {f_j^2(t) dt}\,,\quad H_{P,j} = \int_{0}^{T} {2f_j(t) dt}\,,\\ 
+I_{P,j} &= \int_{0}^{T} {2 f_j(t)q_{d,j}(t) dt}\,,\quad L_{P,j} = \int_{0}^{T} {q_{d,j}^2(t) dt}\,, \\
+M_{P,j} &= \int_{0}^{T} {2q_{d,j}(t) dt} 
+\label{eq:coefficients}
+\end{align*} 
+% \normalsize
+% Hence, the total performance index is
+% \begin{equation}
+% J_{2} = \sum_j{J_{2,i}(A_{i}, B_{i}, C_{i}, D_{i}, E_{i})}.
+% \label{minJ2}
+% \end{equation}
+Notice that, $J_{2,j}$ depends only on $K_j$ and $q_{e,j}$, hence
+\begin{equation*}
+\min_{K,q_e}{J_2} = \sum_j{\min_{K_j,q_{e,j}}{J_{2,j}}} \,.
+\end{equation*}
+The optimal actuation variables for a given desired trajectory $q_{d,j}$ can be obtained by solving 
+$
+% \label{eq:partialdiff}
+\frac{\partial J_{2,j}}{\partial q_{e,j}} = 0$ and 
+$\frac{\partial J_{2,j}}{\partial K_j} = 0$,
+which become
+\begin{align*}
+% \label{eq:derived}
+-q_{e,j}H_{P,j} + I_{P,j} +2K_jq^2_{e,j}T +\nonumber\\ +2K_jL_{P,j} -2Kq_{e,j}M_{P,j} &= 0 \\
+-K_jH_{P,j}+2K_j^2q_{e,j}T-K_j^2M_{P,j} &= 0\,.
+% \label{eq:derived1}
+\end{align*}
+Finally, solving for $K$ and $q_{e,j}$, we obtain
+\begin{align}
+\label{eq:optimK}
+  \hat{K}_j &= \frac{\hat{q}_{e,j}H_{P,j}-I_{P,j}}{2(\hat{q}^2_{e,j}T+L_{P,j}-\hat{q}_{e,j}M_{P,j})}\\
+\hat{q}_{e,j} &= \frac{H_{P,j} + \hat{K}_jM_{P,j}}{2\hat{K}_jT}\,.
+\label{eq:optimq}
+\end{align}
+
+% The procedure presented in this section can be applied for systems using whether SEA or PEA and the index to minimize can be either \eqref{eq:J2}, or \eqref{eq:J3}. 
+Table~\ref{tab:optimumval2} summarizes the expressions for the optimal actuation parameters.
+% \begin{table}[ht!]
+% 	\renewcommand\arraystretch{1.5}
+% \begin{center}
+% 	\tiny
+% \begin{tabular}{|c||c||c|}
+% \hline																							    
+%     &  $J_1$ & $J_2$  \\ 
+% \hline
+% \hline
+% SEA & A solution of~\eqref{eq:SEA_J1_OptimalK}  &  $\hat{K}_j = -2\frac{F_{S,j}}{G_{S,j}}$ \\
+% \hline
+% PEA & $\begin{aligned}\hat{K}_j &= \frac{B_{P,j}E_{P,j}-2C_{P,j}D_{P,j}}{4D_{P,j}F_{P,j}-E^2_{P,j}}\\
+% \hat{q}_{e,j} &= \frac{C_{P,j}E_{P,j} - 2B_{P,j}F_{P,j}}{2C_{P,j}D_{P,j}-B_{P,j}E_{P,j}}\end{aligned}$ 
+%     & $\begin{aligned}\hat{K}_j &= \frac{\hat{q}_{e,j}H_{P,j}-I_{P,j}}{2(\hat{q}^2_{e,j}T+L_{P,j}-\hat{q}_{e,j}M_{P,j})}\\
+% 	\hat{q}_{e,j} &= \frac{H_{P,j} + \hat{K}_jM_{P,j}}{2\hat{K}_jT}\end{aligned}$  \\ 																	\hline
+% \end{tabular}
+% \label{tab:optimumval}
+% \end{center}
+% \caption{Optimal parameters $\hat K$ and $\hat q_e$.}
+% \end{table}
+
+\begin{table}[ht!]
+\begin{center}
+	\tiny
+	\tabcolsep 3pt
+	\renewcommand\arraystretch{1.5}
+\begin{tabular}{c|cc}
+% \hline																							    
+    &  $J_1$ & $J_2$  \\ 
+\hline
+\hline
+SEA & A solution of~\eqref{eq:SEA_J1_OptimalK}  &  $\hat{K}_j = -2\frac{F_{S,j}}{G_{S,j}}$ \\
+\hline
+PEA & $\begin{aligned}\hat{K}_j &= \frac{B_{P,j}E_{P,j}-2C_{P,j}D_{P,j}}{4D_{P,j}F_{P,j}-E^2_{P,j}}\\
+\hat{q}_{e,j} &= \frac{C_{P,j}E_{P,j} - 2B_{P,j}F_{P,j}}{2C_{P,j}D_{P,j}-B_{P,j}E_{P,j}}\end{aligned}$ 
+    & $\begin{aligned}\hat{K}_j &= \frac{\hat{q}_{e,j}H_{P,j}-I_{P,j}}{2(\hat{q}^2_{e,j}T+L_{P,j}-\hat{q}_{e,j}M_{P,j})}\\
+	\hat{q}_{e,j} &= \frac{H_{P,j} + \hat{K}_jM_{P,j}}{2\hat{K}_jT}\end{aligned}$  \\ 																	
+	% \hline
+\end{tabular}
+\end{center}
+\caption{Optimal parameters $\hat K$ and $\hat q_e$.}
+\label{tab:optimumval2}
+\vspace{-0.5cm}
+\end{table}
+The optimal value for stiffness $K$ and pre-load $q_e$ obtained before are not necessarily inside the admissible range of values. In this case, the optimal values are on the boundary of the admissible set for the actuation parameters. 
+
+For the SEA, cost functional $J_2$ has a unique global minimum and hence, if such value is not admissible, then
+\begin{equation}
+\hat{K} = \begin{cases} K_m \ \text{if} \ J_i(K_m)< J_i(K_M) \\
+K_M \ \text{if} \ J_i(K_M)< J_i(K_m)\,.
+\end{cases}
+\label{eq:KboundsSEA}
+\end{equation}
+On the other hand, for cost functional $J_1$, the optimal stiffness value can be obtained solving \eqref{eq:SEA_J1_OptimalK} which has three solutions. Hence, the optimal stiffness can be one of these solutions or it can lie on the border of the admissible range of values.  
+
+For PEA, the performance index depends on the two optimization variables $K$ and $q_e$. However, both cost functionals have a unique global minimum. Hence, if the optimal values are such that $\hat{K} \notin [K_m\ K_M]$ and/or $\hat{q}_e \notin [q_{e,m}\ q_{e,M}]$, then the optimal parameters are in the border of the admissible range of values. Consider the following cases:
+\begin{enumerate}
+\item if $\hat{K} \notin [K_m\ K_M]$ and $\hat{q}_e \in [q_{e,m}\ q_{e,M}]$. In this case, if the first of~\eqref{eq:partialdiff} is satisfied by $\hat{q}_e$, 
+\begin{equation*}
+\hat{K} = 
+\begin{cases} 
+K_m \ \text{if} \ J(K_m, \hat{q}_e(K_m))< J(K_M,  \hat{q}_e(K_M))\,, \\
+K_M \ \text{if} \ J(K_M, \hat{q}_e(K_M))< J(K_m,  \hat{q}_e(K_m))\,;
+\end{cases}
+\label{eq:KboundsPEA}
+\end{equation*}
+\item $\hat{K} \in [K_m\  K_M]$ and $\hat{q}_e \notin [q_{e,m} q_{e,M}]$. In this case, if the second of~\eqref{eq:partialdiff} is satisfied by $\hat{K}$,
+\begin{equation*}
+\hat{q_e} = 
+{\small
+\begin{cases} 
+q_{e,m} \ \text{if} \ J(\hat{K}(q_{e,m}), q_{e,m})< J(\hat{K}(q_{e,M}), q_{e,M}) \\
+q_{e,M} \ \text{if} \ J(\hat{K}(q_{e,M}), q_{e,M})< J(\hat{K}(q_{e,m}), q_{e,m}) \,;
+\end{cases}}
+\end{equation*}
+\item $\hat{K} \notin [K_m\ K_M]$ and $\hat{q}_e \notin [q_{e,m}\ q_{e,M}]$, then the optimal pair $\hat K,\,\hat q_e$ is related to the minimum value among the following: $J(K_m, q_{e,M})$, $J(K_M, q_{e,M})$, $J(K_m, q_{e,m})$ and $J(K_M, q_{e,m})$.
+% 
+% 
+% we have:
+% \begin{description}
+% \item[a)] $\hat{K}=K_m $ and $\hat{q}_e=q_{e,m}$, if $J(K_m, q_{e,m})<J(K_m, q_{e,M})$;  
+% \item[b)] $\hat{K}=K_m $ and $\hat{q}_e= q_{e,M}$, if $J(K_m, q_{e,M})<J(K_m, q_{e,m})$;
+% \item[c)] $\hat{K}=K_M $ and $\hat{q}_e=q_{e,m}$, if $J(K_M, q_{e,m})<J(K_M, q_{e,M})$;
+% \item[d)] $\hat{K}=K_M $ and $\hat{q}_e= q_{e,M}$, if $J(K_M, q_{e,M})<J(K_M, q_{e,m})$. 
+% \end{description}
+% \end{itemize}
+
+% \item $\hat{K} \notin [K_m\  K_M]$, then we have:
+% \begin{description}
+% \item[a)] $\hat{q}_e=q_{e,m}$ and $\hat{K}= K_m$,
+% if $J(K_m, q_{e,m}) < J(K_M, q_{e,m})$;
+% \item[b)] $\hat{q}_e=q_{e,m}$ and $\hat{K}= K_M$, if $J(K_M, q_{e,m}) < J(K_m, q_{e,m})$; 
+% \item[c)] $\hat{q}_e=q_{e,M}$ and $\hat{K}= K_m$, if $J(K_m, q_{e,M}) < J(K_M, q_{e,M})$;
+% \item[d)] $\hat{q}_e=q_{e,M}$ and $\hat{K}= K_M$, if $J(K_M, q_{e,M}) < J(K_m, q_{e,M})$.
+% \end{description}
+% \end{itemize}
+\end{enumerate}
+
+With the procedure followed so far, we 
+% can translate the general problem in \eqref{eq:problem_form} in which the actuation parameters and the joint trajectories are the optimization variables, in 
+have obtained a simpler problem in which only the joint trajectories are the optimization variables which can not be achieved analytically. Hence, in next sections we provide numerical solution applying our method to some mechanical systems. 
+
+

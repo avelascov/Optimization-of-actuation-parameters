@@ -1,0 +1,64 @@
+%!TEX TS-program = pdflatex
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+
+\IEEEoverridecommandlockouts                              % This command is only needed if 
+                                                          % you want to use the \thanks command
+
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% The following packages can be found on http:\\www.ctan.org
+\usepackage{color}
+\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{epsfig} % for postscript graphics files
+%\usepackage{mathptmx} % assumes new font selection scheme installed
+%\usepackage{times} % assumes new font selection scheme installed
+\usepackage{amsmath} % assumes amsmath package installed
+\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{subfigure}
+\usepackage{url}
+
+\renewcommand{\baselinestretch}{0.91}
+\hyphenation{methodo-logy}
+
+% \addtolength{\topmargin}{50pt}
+\title{\LARGE \bf Soft-Actuators in Cyclic Motion: Analytical Optimization of Stiffness and Pre-Load 
+}
+
+\author{Alexandra Velasco$^*$, Gian Maria Gasparri$^\dagger$, Manolo Garabini$^*$, Lorenzo Malagia$^*$, \\Paolo Salaris$^*$ and Antonio Bicchi$^{*\dagger}$
+\thanks{The research leading to these results has received funding from the European Union Seventh Framework Programme   under grants FP7 ICT-287513 ``SAPHARI'' project and the ERC Advanced Grant 291166 ``SoftHands'' project.}
+\thanks{$^*$ Research Center ``Enrico Piaggio'', University of Pisa, via Largo Lucio Lazzarino, 1, 56126 Pisa, Italy.}
+\thanks{$^\dagger$ Department of Advanced Robotics, Istituto Italiano di Tecnologia, via Morego, 30, 16163 Genova, Italy}
+}
+
+\begin{document}
+
+
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+In this paper, we study the role of soft actuation in the reduction of the energy cost for mechanical systems that perform cyclic tasks. The objective is to determine the optimal stiffness value and spring pre-load such that a given cost functional is minimized. For the analysis, we consider both fully actuated and underactuated mechanical systems using elastic actuators which, depending on how and where the springs are placed w.r.t.~the actuator and the load, can be Series Elastic Actuators (SEAs) or Parallel Elastic Actuators (PEAs). The energy consumption depends not only on the actuation parameters but also on the trajectories followed to perform a given cyclic task. We show that the general problem in which both joint trajectories and actuation parameters are the optimization variables, can be cast as a simpler problem in which optimization regards only joint trajectories. Simulations of fully actuated and underactuted compliant robots are reported to demonstrate the effectiveness of the method.
+Although the stiffness optimization method is analytical in nature, it is directly applicable to existing systems whose model is unknown. A model--free experimental application on a prototype of a hopping robot with SEA is presented.
+\end{abstract}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{Intro}
+\input{problem}
+\input{optimization}
+\input{Results}
+\input{Experiment}
+\input{Conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,Biblio}
+
+\end{document}
